@@ -77,6 +77,8 @@ def q():
 
 This is a sample model that extends the `sql-injection` sinkModel to find instances of `cursor.execute()` as vulnerable.
 
+`databricks.model.yml`
+
 ```yaml
 
 extensions:
