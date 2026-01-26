@@ -1,0 +1,44 @@
+<!DOCTYPE qhelp PUBLIC "-//Semmle//qhelp//EN" "qhelp.dtd">
+<qhelp>
+<overview>
+<p>
+Setting <code>ServicePointManager.ServerCertificateValidationCallback</code> to a callback that always returns 
+<code>true</code> disables SSL/TLS certificate validation globally for all HTTPS requests in the application. 
+This makes the application vulnerable to man-in-the-middle (MITM) attacks, as it will accept any SSL certificate, 
+including invalid, expired, or malicious ones.
+</p>
+<p>
+When certificate validation is disabled, an attacker can intercept HTTPS communications, potentially gaining access 
+to sensitive data such as credentials, session tokens, or personal information.
+</p>
+</overview>
+
+<recommendation>
+<p>
+Never disable SSL certificate validation globally. Instead:
+</p>
+<ul>
+<li>Use properly configured SSL certificates from trusted Certificate Authorities (CAs).</li>
+<li>If you need to accept specific self-signed certificates in development or testing environments, 
+    validate the certificate thumbprint or other specific properties rather than accepting all certificates.</li>
+<li>Consider using certificate pinning for sensitive applications to ensure only specific certificates are accepted.</li>
+<li>If you must customize certificate validation, implement proper validation logic that checks 
+    <code>SslPolicyErrors</code> and certificate properties.</li>
+<li>Never deploy code with disabled certificate validation to production environments.</li>
+</ul>
+</recommendation>
+
+<example>
+<p>The following example shows insecure code that disables certificate validation globally:</p>
+<sample src="GlobalSslDisableBad.cs" />
+
+<p>The following example shows secure alternatives:</p>
+<sample src="GlobalSslDisableGood.cs" />
+</example>
+
+<references>
+<li>OWASP: <a href="https://owasp.org/www-community/vulnerabilities/Improper_Certificate_Validation">Improper Certificate Validation</a></li>
+<li>CWE: <a href="https://cwe.mitre.org/data/definitions/295.html">CWE-295: Improper Certificate Validation</a></li>
+<li>Microsoft Docs: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.servicepointmanager.servercertificatevalidationcallback">ServicePointManager.ServerCertificateValidationCallback</a></li>
+</references>
+</qhelp>
