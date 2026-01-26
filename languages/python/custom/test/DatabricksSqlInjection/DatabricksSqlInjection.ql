@@ -1,19 +1,6 @@
 import python
-import TestUtilities.InlineExpectationsTest
-import experimental.semmle.python.Concepts
+import semmle.python.security.dataflow.SqlInjectionCustomizations
 
-module DatabricksSqlInjectionTest implements TestSig {
-  string getARelevantTag() { result = "sinkModel" }
+from SqlInjection::Sink sink
+select sink, "SQL injection sink"
 
-  predicate hasActualResult(Location location, string element, string tag, string value) {
-    tag = "sinkModel" and
-    exists(SqlExecution exec, DataFlow::Node sink |
-      sink = exec.getSql() and
-      location = sink.getLocation() and
-      element = sink.toString() and
-      value = "sql-injection"
-    )
-  }
-}
-
-import MakeTest<DatabricksSqlInjectionTest>

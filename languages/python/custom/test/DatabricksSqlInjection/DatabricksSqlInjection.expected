@@ -1,1 +1,1 @@
-| test_databricks.py:30:17:30:21 | ControlFlowNode for query | sinkModel | sql-injection |
+| test_databricks.py:30:32:30:36 | ControlFlowNode for query | SQL injection sink |

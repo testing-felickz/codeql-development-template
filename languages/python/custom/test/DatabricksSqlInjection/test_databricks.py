@@ -27,7 +27,7 @@ def get_data(query):
             with connection.cursor() as cursor:
 
                 # Execute the SQL query
-                cursor.execute(query) # $sinkModel=sql-injection
+                cursor.execute(query)
 
                 # Fetch the results
                 result = cursor.fetchall()
