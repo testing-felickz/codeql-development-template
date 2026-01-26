@@ -27,7 +27,7 @@ body:
       required: true
 
   - type: input
-    id: Extension name
+    id: extension-name
     attributes:
       label: Data Extension Name (Optional)
       description: extension name (e.g., databricks.model.yml). Auto-generated if not provided.
