@@ -1,0 +1,38 @@
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      # HttpServerExchange.getQueryParameters() returns Map<String, Deque<String>> 
+      # The map values (Deque<String>) contain user-controlled query parameter values
+      - ["io.undertow.server", "HttpServerExchange", false, "getQueryParameters", "()", "", "ReturnValue.MapValue.Element", "remote", "manual", ""]
+      
+      # HttpServerExchange.getQueryParameters().get(String) returns Deque<String>
+      # The deque elements contain user-controlled query parameter values
+      - ["io.undertow.server", "HttpServerExchange", false, "getQueryParameters", "()", "", "ReturnValue.MapValue", "remote", "manual", ""]
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sinkModel
+    data:
+      # Sender.send(String) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", false, "send", "(Ljava/lang/String;)V", "", "Argument[0]", "xss", "manual", ""]
+      
+      # Sender.send(String, IoCallback) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", false, "send", "(Ljava/lang/String;Lio/undertow/io/IoCallback;)V", "", "Argument[0]", "xss", "manual", ""]
+      
+      # Sender.send(ByteBuffer) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", false, "send", "(Ljava/nio/ByteBuffer;)V", "", "Argument[0]", "xss", "manual", ""]
+      
+      # Sender.send(ByteBuffer, IoCallback) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", false, "send", "(Ljava/nio/ByteBuffer;Lio/undertow/io/IoCallback;)V", "", "Argument[0]", "xss", "manual", ""]
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: summaryModel
+    data: []
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: neutralModel
+    data: []

@@ -1,0 +1,1 @@
+| UndertowExample.java:22:29:22:106 | send(...) | UndertowExample.java:17:39:17:65 | getQueryParameters(...) | UndertowExample.java:22:29:22:106 | send(...) | XSS vulnerability: user input from $@ flows to HTTP response. | UndertowExample.java:17:39:17:65 | query parameter |
