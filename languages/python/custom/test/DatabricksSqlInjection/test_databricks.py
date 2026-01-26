@@ -49,7 +49,7 @@ def fetch_service_details(service):
     offset = (page - 1) * page_size
     query = f"""select
                     s.*
-                from `catalogue`.service_dataset.rpt_device s
+                from catalogue.service_dataset.rpt_device s
                 where lower(s.servicename) = "{service.lower()}"
                 LIMIT {page_size} OFFSET {offset}
     """
