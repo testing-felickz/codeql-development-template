@@ -1,0 +1,8 @@
+extensions:
+  - addsTo:
+      pack: codeql/python-all
+      extensible: sinkModel
+    data:
+      # Databricks SQL injection sink - cursor.execute(query)
+      # Path: databricks.sql.connect() -> cursor() -> execute(query)
+      - ["databricks", "Member[sql].Member[connect].ReturnValue.Member[cursor].ReturnValue.Member[execute].Argument[0]", "sql-injection"]
