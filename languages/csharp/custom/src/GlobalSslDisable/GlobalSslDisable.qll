@@ -104,10 +104,4 @@ class GlobalSslDisable extends Expr {
     this instanceof ServerCertificateValidationCallbackAddition and
     alwaysReturnsTrue(this.(ServerCertificateValidationCallbackAddition).getRightHandSide())
   }
-
-  Expr getCallback() {
-    result = this.(ServerCertificateValidationCallbackAssignment).getRightHandSide()
-    or
-    result = this.(ServerCertificateValidationCallbackAddition).getRightHandSide()
-  }
 }
