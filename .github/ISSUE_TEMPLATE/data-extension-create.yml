@@ -1,0 +1,133 @@
+name: Request new CodeQL Data Exension
+description: Request a new CodeQL query for detecting specific code patterns
+title: "[Query Create]: "
+labels: ["query-create", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a new CodeQL data extension! This template helps Copilot Coding Agent understand your requirements.
+
+  - type: dropdown
+    id: target-language
+    attributes:
+      label: Target Language
+      description: Which programming language should this query target?
+      options:
+        - actions
+        - cpp
+        - csharp
+        - go
+        - java
+        - javascript
+        - python
+        - ruby
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: Extension name
+    attributes:
+      label: Data Extension Name (Optional)
+      description: extension name (e.g., databricks.model.yml). Auto-generated if not provided.
+      placeholder: "e.g., framework.model.yml"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: extension-type
+    attributes:
+      label: Data Extension Type
+      description: Type of the data extension (supports multiple)
+      multiple: true
+      options:
+        - sourceModel
+        - sinkModel
+        - summaryModel
+        - nuetralModel
+        - typeModel        
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Data Extension Description
+      description: What library/framework this model detect? What sources / what sinks?
+      placeholder: "This model should identify..."
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Code Examples
+      description: Provide sample end to code that should be detected
+      placeholder: |
+        ```java
+        package org.example;
+
+        # Undertow is not supported out of the box
+        import io.undertow.Undertow;
+        import io.undertow.server.HttpHandler;
+        import io.undertow.server.HttpServerExchange;
+        import io.undertow.util.Headers;
+        import java.util.Deque;
+        import javax.crypto.Cipher;
+        
+        public class App {
+            public String getGreeting() {
+                return "Hello World!";
+            }
+        
+            public static void main(String[] args) {
+                System.out.println(new App().getGreeting());
+                try {
+                    Runtime.getRuntime().exec("ls");
+                    Cipher rsanopad = Cipher.getInstance("RSA/ECB/NoPadding");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+        
+                Undertow server = Undertow.builder()
+                        .addHttpListener(8080, "localhost")
+                        .setHandler(new HttpHandler() {
+                            @Override
+                            public void handleRequest(final HttpServerExchange exchange) throws Exception {
+                                String name = "world";
+                                Deque<String> res = exchange.getQueryParameters().get("namex"); // SOURCE
+                                if (res != null) {
+                                    name = res.getFirst();
+                                }
+                                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
+                                exchange.getResponseSender().send("<html><body>Hello " + name + "</body<</html>"); // SINK XSS
+                            }
+                        }).build();
+                server.start();
+            }
+        }
+        ```
+    validations:
+      required: false
+
+
+  - type: input
+    id: references
+    attributes:
+      label: References (Optional)
+      description: Links to documentation, research, or related resources
+      placeholder: "https://..."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
