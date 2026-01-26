@@ -10,3 +10,5 @@ models-output.json
 *.testproj
 trap
 
+# Test output files
+*.actual

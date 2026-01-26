@@ -1,3 +1,0 @@
-| file://:0:0:0:0 | ModuleImport moduleImport("databricks") | databricks module |
-| file://:0:0:0:0 | ModuleImport moduleImport("databricks").getMember("sql") | databricks.sql |
-| test_databricks.py:20:14:20:26 | Use moduleImport("databricks").getMember("sql").getMember("connect") | databricks.sql.connect |
