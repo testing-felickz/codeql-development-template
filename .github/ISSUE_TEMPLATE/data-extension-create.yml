@@ -1,7 +1,7 @@
 name: Request new CodeQL Data Exension
 description: Request a new CodeQL query for detecting specific code patterns
-title: "[Query Create]: "
-labels: ["query-create", "enhancement"]
+title: "[Data Extension Create]: "
+labels: ["data-extension-create", "enhancement"]
 body:
   - type: markdown
     attributes:
