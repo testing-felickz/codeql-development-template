@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.undertow:undertow-core:2.3.10.Final'
+    implementation 'io.undertow:undertow-core:2.3.21.Final'
 }
 
 java {
