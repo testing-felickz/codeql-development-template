@@ -10,3 +10,14 @@ models-output.json
 *.testproj
 trap
 
+# Java test artifacts
+.gradle/
+build/
+db/
+*.bqrs
+
+# Gradle wrapper (should be committed in real projects, but not needed for tests)
+gradle/
+gradlew
+gradlew.bat
+

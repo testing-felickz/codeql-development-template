@@ -8,25 +8,25 @@
  */
 
 import java
+import semmle.code.java.dataflow.FlowSources
 import semmle.code.java.dataflow.TaintTracking
-import DataFlow::PathGraph
+import semmle.code.java.security.XSS
 
-class UndertowXSSConfig extends TaintTracking::Configuration {
-  UndertowXSSConfig() { this = "UndertowXSSConfig" }
+/**
+ * A taint-tracking configuration for testing Undertow XSS.
+ */
+module UndertowXSSConfig implements DataFlow::ConfigSig {
+  predicate isSource(DataFlow::Node source) { source instanceof RemoteFlowSource }
 
-  override predicate isSource(DataFlow::Node source) {
-    source.asExpr().(MethodAccess).getMethod().hasName("getQueryParameters")
-  }
-
-  override predicate isSink(DataFlow::Node sink) {
-    exists(MethodAccess ma |
-      ma.getMethod().hasName("send") and
-      sink.asExpr() = ma.getAnArgument()
-    )
-  }
+  predicate isSink(DataFlow::Node sink) { sink instanceof XssSink }
 }
 
-from UndertowXSSConfig config, DataFlow::PathNode source, DataFlow::PathNode sink
-where config.hasFlowPath(source, sink)
+/** Tracks flow from remote sources to XSS sinks. */
+module UndertowXSSFlow = TaintTracking::Global<UndertowXSSConfig>;
+
+import UndertowXSSFlow::PathGraph
+
+from UndertowXSSFlow::PathNode source, UndertowXSSFlow::PathNode sink
+where UndertowXSSFlow::flowPath(source, sink)
 select sink.getNode(), source, sink, "XSS vulnerability: user input from $@ flows to HTTP response.",
-  source.getNode(), "query parameter"
+  source.getNode(), "remote source"
