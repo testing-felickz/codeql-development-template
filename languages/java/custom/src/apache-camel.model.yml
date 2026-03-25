@@ -70,5 +70,6 @@ extensions:
       - ["org.apache.camel", "FluentProducerTemplate", True, "withHeader", "(String,Object)", "", "Argument[1]", "Argument[this]", "taint", "manual"]
       - ["org.apache.camel", "FluentProducerTemplate", True, "withHeader", "(String,Object)", "", "Argument[this]", "ReturnValue", "value", "manual"]
       - ["org.apache.camel", "FluentProducerTemplate", True, "to", "(String)", "", "Argument[this]", "ReturnValue", "value", "manual"]
-      - ["org.apache.camel", "FluentProducerTemplate", True, "request", "", "", "Argument[this]", "ReturnValue", "taint", "manual"]
+      - ["org.apache.camel", "FluentProducerTemplate", True, "request", "()", "", "Argument[this]", "ReturnValue", "taint", "manual"]
+      - ["org.apache.camel", "FluentProducerTemplate", True, "request", "(Class)", "", "Argument[this]", "ReturnValue", "taint", "manual"]
       - ["org.apache.camel", "FluentProducerTemplate", True, "send", "()", "", "Argument[this]", "ReturnValue", "taint", "manual"]
