@@ -1,0 +1,94 @@
+edges
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:14:14:14:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:23:14:23:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:36:14:36:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:46:14:46:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:57:14:57:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | test_rglob_sanitization.py:70:14:70:20 | ControlFlowNode for request | provenance |  |
+| test_rglob_sanitization.py:14:5:14:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:15:5:15:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:14:14:14:20 | ControlFlowNode for request | test_rglob_sanitization.py:14:14:14:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:14:14:14:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:14:14:14:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:14:14:14:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:14:5:14:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:15:5:15:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:16:20:16:26 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:23:5:23:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:24:5:24:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:23:14:23:20 | ControlFlowNode for request | test_rglob_sanitization.py:23:14:23:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:23:14:23:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:23:14:23:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:23:14:23:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:23:5:23:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:24:5:24:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:25:16:25:22 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:36:5:36:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:37:5:37:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:36:14:36:20 | ControlFlowNode for request | test_rglob_sanitization.py:36:14:36:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:36:14:36:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:36:14:36:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:36:14:36:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:36:5:36:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:37:5:37:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:37:5:37:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:38:5:38:12 | ControlFlowNode for resolved | test_rglob_sanitization.py:39:20:39:27 | ControlFlowNode for resolved | provenance |  |
+| test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | test_rglob_sanitization.py:38:16:38:32 | ControlFlowNode for Attribute() | provenance | Config |
+| test_rglob_sanitization.py:38:16:38:32 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:38:5:38:12 | ControlFlowNode for resolved | provenance |  |
+| test_rglob_sanitization.py:46:5:46:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:47:5:47:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:46:14:46:20 | ControlFlowNode for request | test_rglob_sanitization.py:46:14:46:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:46:14:46:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:46:14:46:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:46:14:46:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:46:5:46:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:47:5:47:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:50:20:50:26 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:57:5:57:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:58:5:58:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:57:14:57:20 | ControlFlowNode for request | test_rglob_sanitization.py:57:14:57:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:57:14:57:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:57:14:57:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:57:14:57:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:57:5:57:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:58:5:58:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:59:16:59:22 | ControlFlowNode for job_dir | provenance |  |
+| test_rglob_sanitization.py:70:5:70:10 | ControlFlowNode for job_id | test_rglob_sanitization.py:71:5:71:11 | ControlFlowNode for job_dir | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:70:14:70:20 | ControlFlowNode for request | test_rglob_sanitization.py:70:14:70:25 | ControlFlowNode for Attribute | provenance | AdditionalTaintStep |
+| test_rglob_sanitization.py:70:14:70:25 | ControlFlowNode for Attribute | test_rglob_sanitization.py:70:14:70:43 | ControlFlowNode for Attribute() | provenance | dict.get |
+| test_rglob_sanitization.py:70:14:70:43 | ControlFlowNode for Attribute() | test_rglob_sanitization.py:70:5:70:10 | ControlFlowNode for job_id | provenance |  |
+| test_rglob_sanitization.py:71:5:71:11 | ControlFlowNode for job_dir | test_rglob_sanitization.py:72:9:72:15 | ControlFlowNode for job_dir | provenance |  |
+nodes
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | semmle.label | ControlFlowNode for ImportMember |
+| test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:14:5:14:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:14:14:14:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:14:14:14:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:14:14:14:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:15:5:15:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:16:20:16:26 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:23:5:23:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:23:14:23:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:23:14:23:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:23:14:23:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:24:5:24:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:25:16:25:22 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:36:5:36:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:36:14:36:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:36:14:36:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:36:14:36:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:37:5:37:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:38:5:38:12 | ControlFlowNode for resolved | semmle.label | ControlFlowNode for resolved |
+| test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:38:16:38:32 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:39:20:39:27 | ControlFlowNode for resolved | semmle.label | ControlFlowNode for resolved |
+| test_rglob_sanitization.py:46:5:46:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:46:14:46:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:46:14:46:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:46:14:46:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:47:5:47:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:50:20:50:26 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:57:5:57:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:57:14:57:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:57:14:57:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:57:14:57:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:58:5:58:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:59:16:59:22 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:70:5:70:10 | ControlFlowNode for job_id | semmle.label | ControlFlowNode for job_id |
+| test_rglob_sanitization.py:70:14:70:20 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| test_rglob_sanitization.py:70:14:70:25 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+| test_rglob_sanitization.py:70:14:70:43 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| test_rglob_sanitization.py:71:5:71:11 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+| test_rglob_sanitization.py:72:9:72:15 | ControlFlowNode for job_dir | semmle.label | ControlFlowNode for job_dir |
+subpaths
+#select
+| test_rglob_sanitization.py:16:20:16:26 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:16:20:16:26 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:25:16:25:22 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:25:16:25:22 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:38:16:38:22 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:39:20:39:27 | ControlFlowNode for resolved | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:39:20:39:27 | ControlFlowNode for resolved | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:50:20:50:26 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:50:20:50:26 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:59:16:59:22 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:59:16:59:22 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
+| test_rglob_sanitization.py:72:9:72:15 | ControlFlowNode for job_dir | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | test_rglob_sanitization.py:72:9:72:15 | ControlFlowNode for job_dir | This path depends on a $@. | test_rglob_sanitization.py:4:26:4:32 | ControlFlowNode for ImportMember | user-provided value |
