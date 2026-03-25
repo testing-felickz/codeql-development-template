@@ -37,14 +37,15 @@ private import semmle.python.Concepts
  * See https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
  */
 private class PathlibResolveCall extends Path::PathNormalization::Range, DataFlow::CallCfgNode {
-  DataFlow::AttrRead resolveAttr;
+  /** The attribute read for the `.resolve` method access on a path object. */
+  DataFlow::AttrRead resolveMethodAccess;
 
   PathlibResolveCall() {
-    resolveAttr.getAttributeName() = "resolve" and
-    resolveAttr.(DataFlow::LocalSourceNode).flowsTo(this.getFunction())
+    resolveMethodAccess.getAttributeName() = "resolve" and
+    resolveMethodAccess.(DataFlow::LocalSourceNode).flowsTo(this.getFunction())
   }
 
-  override DataFlow::Node getPathArg() { result = resolveAttr.getObject() }
+  override DataFlow::Node getPathArg() { result = resolveMethodAccess.getObject() }
 }
 
 /**
@@ -64,6 +65,8 @@ private class IsRelativeToCall extends Path::SafeAccessCheck::Range {
   }
 
   override predicate checks(ControlFlowNode node, boolean branch) {
+    // When is_relative_to() returns True (branch = true), the path is confirmed
+    // to be confined within the expected directory, making it safe to access.
     node = this.(CallNode).getFunction().(AttrNode).getObject() and
     branch = true
   }
