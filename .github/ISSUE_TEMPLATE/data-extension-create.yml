@@ -27,37 +27,47 @@ body:
       required: true
 
   - type: input
+    id: library-url
+    attributes:
+      label: Library Repository / Documentation URL
+      description: "Link to the library's source code or API documentation. A GitHub repository URL is ideal — it allows the agent to browse the source code directly to identify sources, sinks, and summaries."
+      placeholder: "e.g., https://github.com/databricks/databricks-sql-python"
+    validations:
+      required: true
+
+  - type: input
     id: extension-name
     attributes:
       label: Data Extension Name (Optional)
-      description: extension name (e.g., databricks.model.yml). Auto-generated if not provided.
-      placeholder: "e.g., framework.model.yml"
+      description: "Extension name (e.g., databricks-sql.model.yml). Use <library>-<module>.model.yml naming. If the library has multiple modules/sub-packages (e.g., library-core, library-web, library-api), create separate model files per module."
+      placeholder: "e.g., databricks-sql.model.yml, django-http.model.yml"
     validations:
       required: false
 
-  - type: dropdown
-    id: extension-type
+  - type: textarea
+    id: library-modules
     attributes:
-      label: Data Extension Type
-      description: Type of the data extension (supports multiple)
-      multiple: true
-      options:
-        - sourceModel
-        - sinkModel
-        - summaryModel
-        - nuetralModel
-        - typeModel        
-        - Other
-      default: 0
+      label: Library Modules / Components
+      description: "If the library has distinct modules or sub-packages, list them here. Each module may become a separate model file (e.g., library-core.model.yml, library-web.model.yml). Include the import paths or package names."
+      placeholder: |
+        - databricks.sql (SQL connector: connect, cursor, execute)
+        - databricks.sdk (SDK client: WorkspaceClient, jobs, clusters)
+        - databricks.connect (Spark session bridge)
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: description
     attributes:
       label: Data Extension Description
-      description: What library/framework this model detect? What sources / what sinks?
-      placeholder: "This model should identify..."
+      description: "Describe the library/framework to model. What methods are sources of untrusted data? What methods are security-sensitive sinks? All applicable model types (sourceModel, sinkModel, summaryModel, typeModel, neutralModel) will be generated automatically."
+      placeholder: |
+        Library: databricks-sql-connector
+        - Sources: None (uses Flask request sources)
+        - Sinks: cursor.execute(query) is a SQL injection sink
+        - Summaries: connect() returns a connection, connection.cursor() returns a cursor
+      
+        Docs: https://docs.databricks.com/...
     validations:
       required: true
 
@@ -114,13 +124,12 @@ body:
     validations:
       required: false
 
-
   - type: input
     id: references
     attributes:
-      label: References (Optional)
-      description: Links to documentation, research, or related resources
-      placeholder: "https://..."
+      label: Additional References (Optional)
+      description: "Any other links — API docs, CWE references, related CodeQL queries, or security advisories."
+      placeholder: "e.g., https://docs.databricks.com/sql/connector.html"
     validations:
       required: false
 

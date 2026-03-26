@@ -10,9 +10,10 @@ labels:
 ## 📝 Data Extension Information
 
 - **Language**: <!-- e.g., java, python, javascript -->
-- **Extension Name**: <!-- e.g., databricks.model.yml -->
+- **Extension Name(s)**: <!-- e.g., databricks-sql.model.yml. Use <library>-<module>.model.yml naming. List all files if multiple modules. -->
 - **Extension Types**: <!-- sourceModel, sinkModel, summaryModel, neutralModel, typeModel -->
 - **Target Library/Framework**: <!-- e.g., Undertow, Databricks SQL -->
+- **Library Modules Covered**: <!-- List the distinct modules/sub-packages modeled, one per model file. e.g., databricks.sql, databricks.sdk -->
 
 ## 🎯 Description
 
@@ -57,9 +58,10 @@ extensions:
 
 ## 🧪 Testing
 
-- [ ] Extension resolves without errors (`codeql resolve extensions`)
-- [ ] Database created with sample code
-- [ ] Query results verified with data extension applied
+- [ ] Extension YAML resolves without errors
+- [ ] Database created with sample code (`codeql database create` or `codeql test extract`)
+- [ ] Single query verified with extension applied (`codeql query run --additional-packs=<model-pack-dir>`)
+- [ ] Unit tests pass with extension applied (`codeql test run --additional-packs=<model-pack-dir>`)
 - [ ] Positive test cases (vulnerable code detected)
 - [ ] Negative test cases (safe code not flagged)
 

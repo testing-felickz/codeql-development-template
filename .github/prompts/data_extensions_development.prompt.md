@@ -115,6 +115,33 @@ Neutral models explicitly mark a method as having no taint flow. Their primary p
 
 ### Threat Models
 
+### Model File Organization
+
+When a library or framework has distinct modules, packages, or sub-libraries, split models into **separate YAML files per module** rather than putting everything in one file. This makes models easier to review, maintain, and test independently.
+
+For example, if modeling the `databricks` ecosystem:
+
+```
+models/
+  databricks-sql.model.yml      # databricks.sql module (connect, cursor, execute)
+  databricks-sdk.model.yml       # databricks SDK client methods
+  databricks-connect.model.yml   # databricks-connect Spark session
+```
+
+Or for a web framework like Django:
+
+```
+models/
+  django-http.model.yml          # django.http request/response sources
+  django-db.model.yml            # django.db ORM sinks (raw SQL)
+  django-shortcuts.model.yml     # django.shortcuts (redirect sinks)
+  django-template.model.yml      # django.template (template injection sinks)
+```
+
+Naming convention: `<library>-<module>.model.yml` (lowercase, hyphen-separated).
+
+All `.model.yml` files within a model pack are automatically picked up via the `dataExtensions` glob in `qlpack.yml` (e.g., `dataExtensions: models/**/*.yml`).
+
 ### Two Model Formats: API Graph vs MaD
 
 CodeQL data extensions use one of two tuple formats depending on the language. Using the wrong format for a language will produce invalid extensions.
