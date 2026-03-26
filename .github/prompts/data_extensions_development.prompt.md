@@ -17,15 +17,197 @@ CodeQL analysis can be customized by adding library models in data extension YAM
 Model packs can be used to expand code scanning analysis at scale.  Model packs use data extensions, which are implemented as YAML and describe how to add data for new dependencies. When a model pack is specified, the data extensions in that pack will be added to the code scanning analysis automatically.
 
 Generally each language will allow customization of the following extensible prdicates:
-- sourceModel -  This is used to model sources of potentially tainted data. The kind of the sources defined using this predicate determine which threat model they are associated with. Different threat models can be used to customize the sources used in an analysis.
-- sinkModel - This is used to model sinks where tainted data maybe used in a way that makes the code vulnerable.
-- summaryModel -  This is used to model flow through elements.
-- neutralModel - This is similar to a summary model but used to model the flow of values that have only a minor impact on the dataflow analysis.
-- typeModel - This is less widely available but can 
+- sourceModel -  This is used to model sources of potentially tainted data. The `kind` of the sources defined using this predicate determine which **threat model** they are associated with (e.g., `remote`, `local`, `file`, `commandargs`). Different threat models can be used to customize the sources used in an analysis.
+- sinkModel - This is used to model sinks where tainted data maybe used in a way that makes the code vulnerable. The `kind` identifies the vulnerability class (e.g., `sql-injection`, `command-injection`).
+- summaryModel -  This is used to model flow through elements. The `kind` is either `taint` (derived value) or `value` (same value).
+- neutralModel - This is similar to a summary model but used to model the flow of values that have only a minor impact on the dataflow analysis. Used to override incorrect auto-generated models.
+- typeModel - This is less widely available but can define type relationships so that models for a parent type automatically apply to subtypes.
 
-Threat Models are defined as two main categories (with further breakdown of sub-categories also possible):
-- `remote` which represents requests and responses from the network.
-- `local` which represents data from local files (file), command-line arguments (commandargs), database reads (database), environment variables(environment), standard input (stdin) and Windows registry values (“windows-registry”)
+### What to Model in a Library
+
+When reviewing a library or framework's documentation/API surface, identify the following categories of methods. All are important — sources, sinks, and summaries work together to form a complete taint-tracking path. Missing any one of them can break the chain and cause false negatives.
+
+#### How to read a library's API for modeling
+
+Given a library's documentation, ask these questions for each public method, function, or class:
+
+1. **Does this method return data from an external source?** (network, filesystem, user input, environment) → **Source**
+2. **Does this method consume data in a security-sensitive operation?** (execute SQL, run a shell command, write to a file path, redirect a URL) → **Sink**
+3. **Does this method pass data through without CodeQL being able to see the implementation?** (transform, encode, decode, copy, wrap, unwrap, iterate) → **Summary**
+4. **Is this type a subclass or variant of another type we've already modeled?** → **Type model**
+5. **Has CodeQL's model generator incorrectly flagged this method as having flow?** → **Neutral**
+
+#### Sources (sourceModel)
+
+Sources are methods that return data from outside the application boundary. Without source models, taint tracking has no starting point.
+
+Look for methods that:
+- Read from HTTP requests (parameters, headers, body, cookies, URL)
+- Read from WebSocket/gRPC/messaging channels
+- Read from files, stdin, environment variables, command-line arguments
+- Read from databases or caches
+- Deserialize external data (JSON, XML, YAML, Protobuf)
+
+The `kind` column determines the threat model category — see the Threat Models section below.
+
+#### Sinks (sinkModel)
+
+Sinks are methods that consume data in a way that can cause a vulnerability if the data is attacker-controlled. Without sink models, CodeQL cannot flag the vulnerability even if tainted data reaches the dangerous call.
+
+Look for methods that:
+- Execute SQL or NoSQL queries
+- Execute OS commands or shell scripts
+- Evaluate code dynamically (eval, template rendering)
+- Access filesystem paths
+- Redirect users to URLs
+- Construct LDAP/XPath/regex queries from input
+- Send data over the network (cleartext transmission)
+- Deserialize untrusted data into objects
+
+Each sink kind maps to a specific vulnerability class:
+
+| Sink Kind | Vulnerability | Example |
+|---|---|---|
+| `sql-injection` | SQL Injection (CWE-089) | `cursor.execute(query)` |
+| `command-injection` | OS Command Injection (CWE-078) | `subprocess.run(cmd)` |
+| `code-injection` | Code Injection (CWE-094) | `eval(expr)` |
+| `path-injection` | Path Traversal (CWE-022) | `open(filepath)` |
+| `url-redirection` | Open Redirect (CWE-601) | `redirect(url)` |
+| `log-injection` | Log Injection (CWE-117) | `logger.info(msg)` |
+| `request-forgery` | SSRF (CWE-918) | `fetch(url)` |
+| `nosql-injection` | NoSQL Injection | `collection.find(query)` |
+| `xpath-injection` | XPath Injection | XPath query construction |
+| `ldap-injection` | LDAP Injection | LDAP search filter construction |
+| `html-injection` | XSS (CWE-079) | DOM manipulation (JS only) |
+| `unsafe-deserialization` | Insecure Deserialization (CWE-502) | Unsafe YAML/pickle parsing (JS only) |
+| `remote-sink` | Cleartext Transmission (CWE-319) | Network write (C/C++ only) |
+
+Not all sink kinds are available in all languages — see language-specific prompts for details.
+
+#### Summaries (summaryModel)
+
+Summaries describe how taint propagates **through** a method call. Without summaries, taint tracking loses track of data as it passes through library/framework code, causing false negatives.
+
+Look for methods that:
+- Transform data (encode, decode, escape, unescape, serialize, deserialize)
+- Copy or wrap data (constructors, builders, factory methods)
+- Pass data through collections (add to list, get from map, iterate)
+- Concatenate, split, or format strings
+- Chain or compose operations (middleware, decorators, pipes)
+
+Two summary kinds:
+- `taint` — the output is derived from the input but not necessarily identical (e.g., string concatenation, encoding, parsing). Use this for most cases.
+- `value` — the output is the same value or a direct copy (e.g., getter, identity transform, collection element access). Preserves all properties of the original value.
+
+**When to model summaries:** Focus on methods that sit on the path between a source and a sink. If taint already flows end-to-end without a summary, you don't need one.
+
+#### Types (typeModel)
+
+Type models define relationships between types (e.g., "this subclass should inherit all models from its parent"). Useful to avoid duplicating sink/source/summary models across related classes. Only supported by some languages (Ruby, JS/TS, Python use it; MaD languages handle subtypes via the `subtypes` boolean column instead).
+
+#### Neutrals (neutralModel)
+
+Neutral models explicitly mark a method as having no taint flow. Their primary purpose is to **override auto-generated models** — if CodeQL's model generator (`df-generated` provenance) incorrectly assigned a summary to a method, a manual neutral model suppresses it. They also have a minor effect on dataflow dispatch. Generally only needed when curating generated models.
+
+### Threat Models
+
+### Two Model Formats: API Graph vs MaD
+
+CodeQL data extensions use one of two tuple formats depending on the language. Using the wrong format for a language will produce invalid extensions.
+
+#### API Graph format (short tuples)
+
+Used by: **Python**, **Ruby**, **JavaScript/TypeScript**
+
+Tuples identify targets by a **type** string and an **access path** that navigates the API graph. Tuples are compact (3-5 columns).
+
+```yaml
+# sinkModel(type, path, kind) — 3 columns
+- ["databricks", "Member[sql].Member[connect].ReturnValue.Member[cursor].ReturnValue.Member[execute].Argument[0]", "sql-injection"]
+
+# summaryModel(type, path, input, output, kind) — 5 columns
+- ["global", "Member[decodeURIComponent]", "Argument[0]", "ReturnValue", "taint"]
+```
+
+- The `type` column is a starting point (package name, class name, or `"global"`)
+- The `path` column is a `.`-separated chain of API graph tokens like `Member[x]`, `ReturnValue`, `Argument[n]`, `Parameter[n]`
+- API graph paths can be verified by writing a CodeQL query that walks the API graph (see language-specific prompts)
+
+#### MaD (Models as Data) format (long tuples)
+
+Used by: **Java/Kotlin**, **C#**, **Go**, **C/C++**
+
+Tuples identify targets by **fully qualified package/namespace, type, method name, and signature**. Tuples are verbose (9-10 columns).
+
+```yaml
+# sinkModel(package, type, subtypes, name, signature, ext, input, kind, provenance) — 9 columns
+- ["java.sql", "Statement", True, "execute", "(String)", "", "Argument[0]", "sql-injection", "manual"]
+
+# summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance) — 10 columns
+- ["System", "String", False, "Concat", "(System.Object,System.Object)", "", "Argument[0,1]", "ReturnValue", "taint", "manual"]
+```
+
+- The first 5 columns locate the callable: `package`/`namespace`, `type`, `subtypes` (bool), `name`, `signature`
+- `subtypes: True` means the model applies to overrides/implementors
+- `signature` uses fully qualified type names (Go always uses `""`)
+- The `provenance` column (last) should be `"manual"` for hand-written models
+
+#### Quick reference
+
+| | API Graph | MaD |
+|---|---|---|
+| **Languages** | Python, Ruby, JS/TS | Java/Kotlin, C#, Go, C/C++ |
+| **Pack name** | `codeql/<lang>-all` | `codeql/<lang>-all` |
+| **Sink columns** | 3 (type, path, kind) | 9 |
+| **Summary columns** | 5 | 10 |
+| **Target identification** | Access path navigation | Package + type + method + signature |
+| **Pointer indirection** | N/A | C/C++ only: `Argument[*n]` |
+| **Receiver access** | `Argument[self]` (Ruby/Python) | `Argument[this]` (Java/C#), `Argument[receiver]` (Go) |
+
+For detailed syntax and examples, see the language-specific data extension prompts.
+
+### Threat Models
+
+Threat models control which `sourceModel` entries are active during analysis. The `kind` column of a `sourceModel` determines its threat model category.
+
+#### Default behavior
+By default, only the **`remote`** threat model is enabled. This means only sources marked with `kind: "remote"` are active. To include local sources, you must explicitly enable additional threat models via `--threat-model` on the CLI or in the code scanning configuration.
+
+#### Categories
+
+**`remote`** (enabled by default)
+- Network requests and responses — HTTP parameters, headers, request bodies, WebSocket messages, API responses
+- This is the primary threat model for web-facing applications
+
+**`local`** (must be explicitly enabled)
+Represents data from the local system. Subcategories can be enabled/disabled independently:
+
+| Subcategory | Description | Example |
+|---|---|---|
+| `file` | Local file reads | `open("config.txt").read()` |
+| `commandargs` | Command-line arguments | `sys.argv[1]` |
+| `database` | Database query results | `cursor.fetchall()` |
+| `environment` | Environment variables | `os.environ["KEY"]` |
+| `stdin` | Standard input | `input()` |
+| `windows-registry` | Windows registry values (C# only) | Registry.GetValue() |
+
+Enable selectively: `--threat-model commandargs --threat-model environment` enables only those two, not all of `local`.
+
+**Language-specific categories:**
+
+| Category | Description | Language |
+|---|---|---|
+| `android` | External storage reads, ContentProvider params | Java/Kotlin only |
+| `reverse-dns` | Reverse DNS lookups | Java only |
+| `database-access-result` | Database access results | JavaScript only |
+| `file-write` | Opening files in write mode | C# only |
+| `view-component-input` | React/Vue/Angular component props | JavaScript/TypeScript only |
+
+#### Choosing a threat model for your source
+
+- Use `"remote"` for any data that arrives over the network — this is the most common and is active by default
+- Use specific `local` subcategories (e.g., `"file"`, `"commandargs"`) when modeling local input mechanisms — be precise rather than using the generic `"local"` parent
+- When in doubt, use `"remote"` — it provides the broadest default coverage
 
 ### Query Quality Criteria
 
