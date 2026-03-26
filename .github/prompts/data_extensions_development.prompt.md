@@ -21,7 +21,7 @@ Generally each language will allow customization of the following extensible prd
 - sinkModel - This is used to model sinks where tainted data maybe used in a way that makes the code vulnerable. The `kind` identifies the vulnerability class (e.g., `sql-injection`, `command-injection`).
 - summaryModel -  This is used to model flow through elements. The `kind` is either `taint` (derived value) or `value` (same value).
 - neutralModel - This is similar to a summary model but used to model the flow of values that have only a minor impact on the dataflow analysis. Used to override incorrect auto-generated models.
-- typeModel - This is less widely available but can define type relationships so that models for a parent type automatically apply to subtypes.
+- typeModel - Only available in **API Graph languages** (Python, Ruby, JavaScript/TypeScript). Defines type relationships so that models for a parent type automatically apply to subtypes. MaD languages (Java/Kotlin, C#, Go, C/C++) handle subtyping via the `subtypes` boolean column in their tuples instead.
 
 ### What to Model in a Library
 
@@ -103,7 +103,11 @@ Two summary kinds:
 
 #### Types (typeModel)
 
-Type models define relationships between types (e.g., "this subclass should inherit all models from its parent"). Useful to avoid duplicating sink/source/summary models across related classes. Only supported by some languages (Ruby, JS/TS, Python use it; MaD languages handle subtypes via the `subtypes` boolean column instead).
+Type models define relationships between types (e.g., "this subclass should inherit all models from its parent"). Useful to avoid duplicating sink/source/summary models across related classes.
+
+**Supported by:** Python, Ruby, JavaScript/TypeScript (API Graph languages only)
+
+**Not available in:** Java/Kotlin, C#, Go, C/C++ — these MaD languages handle subtyping through the `subtypes` boolean column in their source/sink/summary tuples. Setting `subtypes: True` makes the model apply to all overrides and implementations of the specified method.
 
 #### Neutrals (neutralModel)
 
