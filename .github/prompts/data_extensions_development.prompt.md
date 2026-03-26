@@ -85,6 +85,56 @@ Essential commands for query development:
 - [codeql bqrs decode](../../resources/cli/codeql/codeql_bqrs_decode.prompt.md) - Convert binary results to text
 - [codeql bqrs info](../../resources/cli/codeql/codeql_bqrs_info.prompt.md) - Inspect result metadata
 
+### Model Pack / Data Extension Options
+
+During development, you'll typically test data extensions with a **single query** or **unit test** — not `codeql database analyze` (which is for full analysis runs / CI).
+
+#### Running a single query with model packs
+
+Use `codeql query run` with `--model-packs` or `--additional-packs`:
+
+```bash
+# Use a published model pack by name against a single query
+codeql query run \
+    --database=/path/to/db \
+    --model-packs=my-org/my-model-pack \
+    --output=results.bqrs \
+    -- path/to/MyQuery.ql
+
+# Use a local (unpublished) model pack during development
+codeql query run \
+    --database=/path/to/db \
+    --additional-packs=languages/<language>/custom/src \
+    --output=results.bqrs \
+    -- path/to/MyQuery.ql
+```
+
+#### Running unit tests with model packs
+
+`codeql test run` does **not** support `--model-packs`. Instead, data extensions are resolved through `qlpack.yml` configuration:
+
+1. The **model pack** declares `extensionTargets` and `dataExtensions` in its `qlpack.yml`
+2. The **test pack** declares a dependency on the model pack in its `qlpack.yml`
+3. Use `--additional-packs` to point the test runner at a local (unpublished) model pack:
+
+```bash
+codeql test run \
+    --additional-packs=languages/<language>/custom/src \
+    --keep-databases \
+    --show-extractor-output \
+    -- languages/<language>/<pack-basename>/test/<QueryBasename>/
+```
+
+#### Full option reference
+
+| Option | Available on | Purpose |
+|---|---|---|
+| `--model-packs=<name@range>` | `codeql query run`, `codeql database analyze` | Reference published model packs by name |
+| `--additional-packs=<dir>[;<dir>...]` | `codeql query run`, `codeql test run`, `codeql database analyze` | Search local directories for packs (primary mechanism for local development) |
+| `--no-database-extension-packs` | `codeql database analyze` | Omit extensions bundled into the database at creation time |
+| `--no-database-threat-models` | `codeql database analyze` | Omit threat model config stored in the database |
+| `--threat-model=<name>` | `codeql database analyze` | Enable/disable threat model categories (e.g., `local`, `remote`, `all`) |
+
 ## Related Resources
 
 - [Test-Driven QL Development](./test_driven_ql_development.prompt.md) - Comprehensive TDD workflow
