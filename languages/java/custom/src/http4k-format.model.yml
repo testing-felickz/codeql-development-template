@@ -1,0 +1,37 @@
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sinkModel
+    data:
+      # Jackson deserialization sinks (untrusted data parsed into objects)
+      - ["org.http4k.format", "ConfigurableJackson", True, "asA", "(String,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+      - ["org.http4k.format", "ConfigurableJackson", True, "asA", "(InputStream,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+      # Moshi deserialization sinks
+      - ["org.http4k.format", "ConfigurableMoshi", True, "asA", "(String,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+      - ["org.http4k.format", "ConfigurableMoshi", True, "asA", "(InputStream,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+      # Gson deserialization sinks
+      - ["org.http4k.format", "ConfigurableGson", True, "asA", "(String,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+      - ["org.http4k.format", "ConfigurableGson", True, "asA", "(InputStream,Class)", "", "Argument[0]", "unsafe-deserialization", "manual"]
+  - addsTo:
+      pack: codeql/java-all
+      extensible: summaryModel
+    data:
+      # Jackson: taint propagation through deserialization (input taints output)
+      - ["org.http4k.format", "ConfigurableJackson", True, "asA", "(String,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      - ["org.http4k.format", "ConfigurableJackson", True, "asA", "(InputStream,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      # Jackson: JSON string parsing
+      - ["org.http4k.format", "ConfigurableJackson", True, "asJsonObject", "(String)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      # Moshi: taint propagation through deserialization
+      - ["org.http4k.format", "ConfigurableMoshi", True, "asA", "(String,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      - ["org.http4k.format", "ConfigurableMoshi", True, "asA", "(InputStream,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      # Moshi: JSON string parsing
+      - ["org.http4k.format", "ConfigurableMoshi", True, "asJsonObject", "(String)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      # Gson: taint propagation through deserialization
+      - ["org.http4k.format", "ConfigurableGson", True, "asA", "(String,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      - ["org.http4k.format", "ConfigurableGson", True, "asA", "(InputStream,Class)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+      # Gson: JSON string parsing
+      - ["org.http4k.format", "ConfigurableGson", True, "asJsonObject", "(String)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+  - addsTo:
+      pack: codeql/java-all
+      extensible: neutralModel
+    data: []

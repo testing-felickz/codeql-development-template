@@ -1,0 +1,32 @@
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      # MultipartFormBody field accessors (form field values from multipart requests)
+      - ["org.http4k.core", "MultipartFormBody", True, "fieldValue", "(String)", "", "ReturnValue", "remote", "manual"]
+      - ["org.http4k.core", "MultipartFormBody", True, "fieldValues", "(String)", "", "ReturnValue", "remote", "manual"]
+      - ["org.http4k.core", "MultipartFormBody", True, "field", "(String)", "", "ReturnValue", "remote", "manual"]
+      - ["org.http4k.core", "MultipartFormBody", True, "fields", "(String)", "", "ReturnValue", "remote", "manual"]
+      # MultipartFormBody file accessors (uploaded files from multipart requests)
+      - ["org.http4k.core", "MultipartFormBody", True, "file", "(String)", "", "ReturnValue", "remote", "manual"]
+      - ["org.http4k.core", "MultipartFormBody", True, "files", "(String)", "", "ReturnValue", "remote", "manual"]
+      # MultipartFormFile properties (attacker-controlled file metadata and content)
+      - ["org.http4k.lens", "MultipartFormFile", True, "getFilename", "()", "", "ReturnValue", "remote", "manual"]
+      - ["org.http4k.lens", "MultipartFormFile", True, "getContent", "()", "", "ReturnValue", "remote", "manual"]
+      # MultipartFormField value (attacker-controlled form field value)
+      - ["org.http4k.lens", "MultipartFormField", True, "getValue", "()", "", "ReturnValue", "remote", "manual"]
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sinkModel
+    data: []
+  - addsTo:
+      pack: codeql/java-all
+      extensible: summaryModel
+    data:
+      # MultipartFormBody.from() parses multipart request, taint flows through
+      - ["org.http4k.core", "MultipartFormBody", False, "from", "(HttpMessage,int,DiskLocation)", "", "Argument[0]", "ReturnValue", "taint", "manual"]
+  - addsTo:
+      pack: codeql/java-all
+      extensible: neutralModel
+    data: []
