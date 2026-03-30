@@ -66,11 +66,10 @@ body:
         - Sources: None (uses Flask request sources)
         - Sinks: cursor.execute(query) is a SQL injection sink
         - Summaries: connect() returns a connection, connection.cursor() returns a cursor
-      
+
         Docs: https://docs.databricks.com/...
     validations:
       required: true
-
 
   - type: textarea
     id: examples
@@ -88,12 +87,12 @@ body:
         import io.undertow.util.Headers;
         import java.util.Deque;
         import javax.crypto.Cipher;
-        
+
         public class App {
             public String getGreeting() {
                 return "Hello World!";
             }
-        
+
             public static void main(String[] args) {
                 System.out.println(new App().getGreeting());
                 try {
@@ -102,7 +101,7 @@ body:
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-        
+
                 Undertow server = Undertow.builder()
                         .addHttpListener(8080, "localhost")
                         .setHandler(new HttpHandler() {
