@@ -1,0 +1,2 @@
+#select
+| UndertowExample.java:22:59:22:104 | ... + ... | UndertowExample.java:17:45:17:73 | getQueryParameters(...) : Map | UndertowExample.java:22:59:22:104 | ... + ... | XSS vulnerability: user input from $@ flows to HTTP response. | UndertowExample.java:17:45:17:73 | getQueryParameters(...) | remote source |

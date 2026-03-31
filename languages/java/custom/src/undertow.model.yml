@@ -1,0 +1,38 @@
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      # HttpServerExchange.getQueryParameters() returns Map<String, Deque<String>> 
+      # The map values contain user-controlled query parameter values
+      # CodeQL automatically handles Map values and Collection elements
+      - ["io.undertow.server", "HttpServerExchange", False, "getQueryParameters", "()", "", "ReturnValue", "remote", "manual"]
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sinkModel
+    data:
+      # Sender.send(String) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(String)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(String, IoCallback) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(String,IoCallback)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(String, Charset) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(String,Charset)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(String, Charset, IoCallback) - sends response content, vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(String,Charset,IoCallback)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(ByteBuffer) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(ByteBuffer)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(ByteBuffer, IoCallback) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(ByteBuffer,IoCallback)", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(ByteBuffer[]) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(ByteBuffer[])", "", "Argument[0]", "html-injection", "manual"]
+      
+      # Sender.send(ByteBuffer[], IoCallback) - sends response content, could be vulnerable to XSS
+      - ["io.undertow.io", "Sender", False, "send", "(ByteBuffer[],IoCallback)", "", "Argument[0]", "html-injection", "manual"]
+
