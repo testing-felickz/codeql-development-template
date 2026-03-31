@@ -1,0 +1,10 @@
+edges
+| test_sql_injection.py:8:27:8:33 | ControlFlowNode for service | test_sql_injection.py:15:5:15:9 | ControlFlowNode for query | provenance |  |
+| test_sql_injection.py:15:5:15:9 | ControlFlowNode for query | test_sql_injection.py:30:28:30:32 | ControlFlowNode for query | provenance | Sink:MaD:0 |
+nodes
+| test_sql_injection.py:8:27:8:33 | ControlFlowNode for service | semmle.label | ControlFlowNode for service |
+| test_sql_injection.py:15:5:15:9 | ControlFlowNode for query | semmle.label | ControlFlowNode for query |
+| test_sql_injection.py:30:28:30:32 | ControlFlowNode for query | semmle.label | ControlFlowNode for query |
+subpaths
+#select
+| test_sql_injection.py:30:28:30:32 | ControlFlowNode for query | test_sql_injection.py:8:27:8:33 | ControlFlowNode for service | test_sql_injection.py:30:28:30:32 | ControlFlowNode for query | SQL query vulnerable to injection from $@. | test_sql_injection.py:8:27:8:33 | ControlFlowNode for service | user-provided value |

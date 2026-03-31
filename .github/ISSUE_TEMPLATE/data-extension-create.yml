@@ -1,4 +1,4 @@
-name: Request new CodeQL Data Exension
+name: Request new CodeQL Data Extension
 description: Request a new CodeQL query for detecting specific code patterns
 title: "[Data Extension Create]: "
 labels: ["data-extension-create", "enhancement"]
