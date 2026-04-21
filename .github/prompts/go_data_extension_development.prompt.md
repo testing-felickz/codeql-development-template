@@ -27,6 +27,8 @@ The pack name is `codeql/go-all`.
 | `sourceModel` | `(package, type, subtypes, name, signature, ext, output, kind, provenance)` | Model sources of tainted data |
 | `sinkModel` | `(package, type, subtypes, name, signature, ext, input, kind, provenance)` | Model sinks |
 | `summaryModel` | `(package, type, subtypes, name, signature, ext, input, output, kind, provenance)` | Model flow through functions |
+| `barrierModel` | `(package, type, subtypes, name, signature, ext, output, kind, provenance)` | Model barriers (sanitizers) that stop taint flow |
+| `barrierGuardModel` | `(package, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)` | Model barrier guards (validators) that stop taint via conditional checks |
 | `neutralModel` | `(package, type, name, signature, kind, provenance)` | Mark functions as having no dataflow impact |
 
 #### Tuple column reference
@@ -129,6 +131,16 @@ extensions:
 
   - addsTo:
       pack: codeql/go-all
+      extensible: barrierModel
+    data: []
+
+  - addsTo:
+      pack: codeql/go-all
+      extensible: barrierGuardModel
+    data: []
+
+  - addsTo:
+      pack: codeql/go-all
       extensible: neutralModel
     data: []
 ```
@@ -197,6 +209,51 @@ extensions:
     data:
        - ["slices", "", False, "Concat", "", "", "Argument[0].ArrayElement.ArrayElement", "ReturnValue.ArrayElement", "value", "manual"]
 ```
+
+### Example: Barrier Using `Htmlquote`
+
+The `Htmlquote` function from the beego framework HTML-escapes a string, preventing HTML injection attacks. The return value is safe.
+
+```go
+func Render(w http.ResponseWriter, r *http.Request) {
+    name := r.FormValue("name")
+    safe := beego.Htmlquote(name) // safe is HTML-escaped
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/go-all
+      extensible: barrierModel
+    data:
+      - ["group:beego", "", True, "Htmlquote", "", "", "ReturnValue", "html-injection", "manual"]
+```
+
+Note: The `group:` prefix matches multiple package paths that refer to the same package (configured via `packageGrouping`). The `kind` `"html-injection"` must match the sink kind used by XSS queries.
+
+### Example: Barrier Guard Using a Validation Function
+
+A barrier guard models a function returning a boolean indicating whether data is safe. When the function returns the expected value, taint flow is stopped through the guarded branch.
+
+```go
+func Query(db *sql.DB, input string) {
+    if example.IsSafe(input) { // The check guards the query
+        db.Query(input) // Safe
+    }
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/go-all
+      extensible: barrierGuardModel
+    data:
+      - ["example.com/example", "", False, "IsSafe", "", "", "Argument[0]", "true", "sql-injection", "manual"]
+```
+
+Note: The `acceptingValue` `"true"` means the barrier applies when `IsSafe` returns true. The `input` `"Argument[0]"` identifies the first argument whose taint flow is blocked.
 
 ### Additional References
 - **[Go Reference](./go_query_development.prompt.md)** - Go query development

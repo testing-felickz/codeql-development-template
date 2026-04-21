@@ -27,6 +27,8 @@ The pack name is `codeql/csharp-all`.
 | `sourceModel` | `(namespace, type, subtypes, name, signature, ext, output, kind, provenance)` | Model sources of tainted data |
 | `sinkModel` | `(namespace, type, subtypes, name, signature, ext, input, kind, provenance)` | Model sinks |
 | `summaryModel` | `(namespace, type, subtypes, name, signature, ext, input, output, kind, provenance)` | Model flow through methods |
+| `barrierModel` | `(namespace, type, subtypes, name, signature, ext, output, kind, provenance)` | Model barriers (sanitizers) that stop taint flow |
+| `barrierGuardModel` | `(namespace, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)` | Model barrier guards (validators) that stop taint via conditional checks |
 | `neutralModel` | `(namespace, type, name, signature, kind, provenance)` | Mark methods as having no dataflow impact |
 
 #### Tuple column reference
@@ -105,6 +107,16 @@ extensions:
 
   - addsTo:
       pack: codeql/csharp-all
+      extensible: barrierModel
+    data: []
+
+  - addsTo:
+      pack: codeql/csharp-all
+      extensible: barrierGuardModel
+    data: []
+
+  - addsTo:
+      pack: codeql/csharp-all
       extensible: neutralModel
     data: []
 ```
@@ -168,6 +180,51 @@ extensions:
     data:
       - ["System", "DateTime", "get_Now", "()", "summary", "manual"]
 ```
+
+### Example: Barrier for URL Redirection
+
+The `RawUrl` property of `HttpRequest` returns the raw URL of the current request, which is safe for URL redirects because it cannot be manipulated by an attacker.
+
+```csharp
+public static void TaintBarrier(HttpRequest request) {
+    string url = request.RawUrl; // Safe for URL redirects
+    Response.Redirect(url); // Not a URL redirection vulnerability
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/csharp-all
+      extensible: barrierModel
+    data:
+      - ["System.Web", "HttpRequest", False, "get_RawUrl", "()", "", "ReturnValue", "url-redirection", "manual"]
+```
+
+Note: Property getters are modeled as `get_PropertyName`. The `kind` `"url-redirection"` must match the sink kind used by URL redirection queries.
+
+### Example: Barrier Guard for URL Validation
+
+The `IsAbsoluteUri` property of `Uri` returns `false` when the URL is relative and therefore safe for URL redirects.
+
+```csharp
+public static void TaintBarrierGuard(Uri uri) {
+    if (!uri.IsAbsoluteUri) { // The check guards the redirect
+        Response.Redirect(uri.ToString()); // Safe
+    }
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/csharp-all
+      extensible: barrierGuardModel
+    data:
+      - ["System", "Uri", False, "get_IsAbsoluteUri", "()", "", "Argument[this]", "false", "url-redirection", "manual"]
+```
+
+Note: The `acceptingValue` `"false"` means the barrier applies when `IsAbsoluteUri` is false (the URL is relative). The `input` `"Argument[this]"` identifies the qualifier (`uri`) whose taint flow is blocked.
 
 ### Additional References
 - **[C# Reference](./csharp_query_development.prompt.md)** - C# query development

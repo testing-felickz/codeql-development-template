@@ -29,6 +29,8 @@ The pack name is `codeql/java-all`.
 | `sourceModel` | `(package, type, subtypes, name, signature, ext, output, kind, provenance)` | Model sources of tainted data |
 | `sinkModel` | `(package, type, subtypes, name, signature, ext, input, kind, provenance)` | Model sinks |
 | `summaryModel` | `(package, type, subtypes, name, signature, ext, input, output, kind, provenance)` | Model flow through methods |
+| `barrierModel` | `(package, type, subtypes, name, signature, ext, output, kind, provenance)` | Model barriers (sanitizers) that stop taint flow |
+| `barrierGuardModel` | `(package, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)` | Model barrier guards (validators) that stop taint via conditional checks |
 | `neutralModel` | `(package, type, name, signature, kind, provenance)` | Mark methods as having no dataflow impact |
 
 #### Tuple column reference
@@ -112,6 +114,16 @@ extensions:
 
   - addsTo:
       pack: codeql/java-all
+      extensible: barrierModel
+    data: []
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierGuardModel
+    data: []
+
+  - addsTo:
+      pack: codeql/java-all
       extensible: neutralModel
     data: []
 ```
@@ -163,6 +175,51 @@ extensions:
     data:
       - ["java.time", "Instant", "now", "()", "summary", "manual"]
 ```
+
+### Example: Barrier for Path Injection
+
+The `File.getName()` method returns only the final component of a path, which protects against path injection vulnerabilities.
+
+```java
+public static void barrier(File file) {
+    String name = file.getName(); // Only the filename, no directory traversal
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierModel
+    data:
+      - ["java.io", "File", True, "getName", "()", "", "ReturnValue", "path-injection", "manual"]
+```
+
+Note: The `kind` `"path-injection"` must match the sink kind used by path injection queries. `subtypes: True` ensures the model applies to subclasses of `File`.
+
+### Example: Barrier Guard for Request Forgery
+
+The `URI.isAbsolute()` method returns `false` when the URI is relative and therefore safe for request forgery because it cannot redirect to an external server.
+
+```java
+public static void barrierguard(URI uri) throws IOException {
+    if (!uri.isAbsolute()) { // The check guards the request
+        URL url = uri.toURL();
+        url.openConnection(); // Safe
+    }
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierGuardModel
+    data:
+      - ["java.net", "URI", True, "isAbsolute", "()", "", "Argument[this]", "false", "request-forgery", "manual"]
+```
+
+Note: The `acceptingValue` `"false"` means the barrier applies when `isAbsolute` returns false (the URI is relative). The `input` `"Argument[this]"` identifies the qualifier (`uri`) whose taint flow is blocked.
 
 ### Additional References
 - **[Java Reference](./java_query_development.prompt.md)** - Java/Kotlin query development

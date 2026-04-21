@@ -11,7 +11,7 @@ labels:
 
 - **Language**: <!-- e.g., java, python, javascript -->
 - **Extension Name(s)**: <!-- e.g., databricks-sql.model.yml. Use <library>-<module>.model.yml naming. List all files if multiple modules. -->
-- **Extension Types**: <!-- sourceModel, sinkModel, summaryModel, neutralModel, typeModel -->
+- **Extension Types**: <!-- sourceModel, sinkModel, summaryModel, barrierModel, barrierGuardModel, neutralModel, typeModel -->
 - **Target Library/Framework**: <!-- e.g., Undertow, Databricks SQL -->
 - **Library Modules Covered**: <!-- List the distinct modules/sub-packages modeled, one per model file. e.g., databricks.sql, databricks.sdk -->
 
@@ -19,7 +19,7 @@ labels:
 
 ### What This Data Extension Models
 
-<!-- Clear description of the library/framework being modeled and what sources, sinks, or summaries it adds -->
+<!-- Clear description of the library/framework being modeled and what sources, sinks, summaries, barriers (sanitizers), or barrier guards (validators) it adds -->
 
 ### Threat Model
 

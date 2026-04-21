@@ -21,6 +21,8 @@ Generally each language will allow customization of the following extensible prd
 - sinkModel - This is used to model sinks where tainted data maybe used in a way that makes the code vulnerable. The `kind` identifies the vulnerability class (e.g., `sql-injection`, `command-injection`).
 - summaryModel -  This is used to model flow through elements. The `kind` is either `taint` (derived value) or `value` (same value).
 - neutralModel - This is similar to a summary model but used to model the flow of values that have only a minor impact on the dataflow analysis. Used to override incorrect auto-generated models.
+- barrierModel - This is used to model barriers (sanitizers), which are elements that stop the flow of taint for a specified query kind. For example, an HTML-escaping function that prevents cross-site scripting. The `kind` must match the corresponding sink kind (e.g., `sql-injection`, `html-injection`). Available since CodeQL 2.25.2.
+- barrierGuardModel - This is used to model barrier guards (validators), which are elements that return a boolean indicating whether data is safe. When the conditional check returns the specified `acceptingValue` (e.g., `"true"` or `"false"`), taint flow is stopped through guarded branches. The `kind` must match the corresponding sink kind. Available since CodeQL 2.25.2.
 - typeModel - Only available in **API Graph languages** (Python, Ruby, JavaScript/TypeScript). Defines type relationships so that models for a parent type automatically apply to subtypes. MaD languages (Java/Kotlin, C#, Go, C/C++) handle subtyping via the `subtypes` boolean column in their tuples instead.
 
 ### What to Model in a Library
@@ -34,8 +36,10 @@ Given a library's documentation, ask these questions for each public method, fun
 1. **Does this method return data from an external source?** (network, filesystem, user input, environment) → **Source**
 2. **Does this method consume data in a security-sensitive operation?** (execute SQL, run a shell command, write to a file path, redirect a URL) → **Sink**
 3. **Does this method pass data through without CodeQL being able to see the implementation?** (transform, encode, decode, copy, wrap, unwrap, iterate) → **Summary**
-4. **Is this type a subclass or variant of another type we've already modeled?** → **Type model**
-5. **Has CodeQL's model generator incorrectly flagged this method as having flow?** → **Neutral**
+4. **Does this method sanitize data so its output is safe for a specific vulnerability type?** (HTML-escape, SQL-escape, path canonicalization, URL encoding) → **Barrier**
+5. **Does this method return a boolean indicating whether data is safe to use?** (URL validation, input format checking, allowlist matching) → **Barrier Guard**
+6. **Is this type a subclass or variant of another type we've already modeled?** → **Type model**
+7. **Has CodeQL's model generator incorrectly flagged this method as having flow?** → **Neutral**
 
 #### Sources (sourceModel)
 
@@ -109,6 +113,26 @@ Type models define relationships between types (e.g., "this subclass should inhe
 
 **Not available in:** Java/Kotlin, C#, Go, C/C++ — these MaD languages handle subtyping through the `subtypes` boolean column in their source/sink/summary tuples. Setting `subtypes: True` makes the model apply to all overrides and implementations of the specified method.
 
+#### Barriers (barrierModel)
+
+Barriers model sanitizer functions — methods whose output is considered safe for a specific vulnerability type. A barrier stops taint flow at the modeled element. The `kind` value must match the sink kind used by the query where the barrier should take effect (e.g., `sql-injection`, `html-injection`, `path-injection`, `url-redirection`, `request-forgery`).
+
+Look for methods that:
+- Escape or encode output for a specific context (HTML-escape, SQL-escape, shell-escape)
+- Canonicalize or normalize paths to prevent traversal
+- Encode data to prevent injection (URL encoding, base64 for safe contexts)
+- Strip or sanitize dangerous characters from input
+
+#### Barrier Guards (barrierGuardModel)
+
+Barrier guards model validator functions — methods that return a boolean indicating whether data is safe to use. When the function returns the expected `acceptingValue` (typically `"true"` or `"false"`), taint flow is stopped through the guarded branch. The `kind` must match the corresponding sink kind.
+
+Look for methods that:
+- Validate URLs (e.g., check if relative, check against allowlist)
+- Check input format or pattern (e.g., is numeric, matches regex)
+- Verify data integrity or safety (e.g., signature validation, allowlist check)
+- Return a boolean that gates subsequent security-sensitive operations
+
 #### Neutrals (neutralModel)
 
 Neutral models explicitly mark a method as having no taint flow. Their primary purpose is to **override auto-generated models** — if CodeQL's model generator (`df-generated` provenance) incorrectly assigned a summary to a method, a manual neutral model suppresses it. They also have a minor effect on dataflow dispatch. Generally only needed when curating generated models.
@@ -158,6 +182,12 @@ Tuples identify targets by a **type** string and an **access path** that navigat
 
 # summaryModel(type, path, input, output, kind) — 5 columns
 - ["global", "Member[decodeURIComponent]", "Argument[0]", "ReturnValue", "taint"]
+
+# barrierModel(type, path, kind) — 3 columns
+- ["html", "Member[escape].ReturnValue", "html-injection"]
+
+# barrierGuardModel(type, path, acceptingValue, kind) — 4 columns
+- ["my-package", "Member[isValid].Argument[0]", "true", "sql-injection"]
 ```
 
 - The `type` column is a starting point (package name, class name, or `"global"`)
@@ -176,6 +206,12 @@ Tuples identify targets by **fully qualified package/namespace, type, method nam
 
 # summaryModel(package, type, subtypes, name, signature, ext, input, output, kind, provenance) — 10 columns
 - ["System", "String", False, "Concat", "(System.Object,System.Object)", "", "Argument[0,1]", "ReturnValue", "taint", "manual"]
+
+# barrierModel(package, type, subtypes, name, signature, ext, output, kind, provenance) — 9 columns
+- ["java.io", "File", True, "getName", "()", "", "ReturnValue", "path-injection", "manual"]
+
+# barrierGuardModel(package, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance) — 10 columns
+- ["java.net", "URI", True, "isAbsolute", "()", "", "Argument[this]", "false", "request-forgery", "manual"]
 ```
 
 - The first 5 columns locate the callable: `package`/`namespace`, `type`, `subtypes` (bool), `name`, `signature`
@@ -191,6 +227,8 @@ Tuples identify targets by **fully qualified package/namespace, type, method nam
 | **Pack name** | `codeql/<lang>-all` | `codeql/<lang>-all` |
 | **Sink columns** | 3 (type, path, kind) | 9 |
 | **Summary columns** | 5 | 10 |
+| **Barrier columns** | 3 (type, path, kind) | 9 |
+| **Barrier guard columns** | 4 (type, path, acceptingValue, kind) | 10 |
 | **Target identification** | Access path navigation | Package + type + method + signature |
 | **Pointer indirection** | N/A | C/C++ only: `Argument[*n]` |
 | **Receiver access** | `Argument[self]` (Ruby/Python) | `Argument[this]` (Java/C#), `Argument[receiver]` (Go) |
@@ -262,7 +300,7 @@ For languages that support API Graphs as the access paths can be most easilly te
 1. creating a small codeql database with some sample code that has a full end to end flow for the suspected query
 2. writing/executing a sample codeql query using api graphs to verify with 100% certainty that the path to discover the suspected source/sink/summary is verified.
 
-To understand if APIGraphs are used by the language, it is best to evaluate the ModelsAsData.qll for the given language. 
+To understand if APIGraphs are used by the language, it is best to evaluate the ModelsAsData.qll for the given language.
 - ex: [python/ql/lib/semmle/python/frameworks/data/ModelsAsData.qll](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/frameworks/data/ModelsAsData.qll) for python imports ApiGraphModels and ApiGraphs
   - [python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModels.qll](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModels.qll) dealing with flow models specified in extensible predicates.
     - [python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModelsSpecific.qll](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModelsSpecific.qll) handles the Python-specific Member[x] tokens by calling node.getMember(x) on the API graph

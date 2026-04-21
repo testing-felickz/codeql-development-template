@@ -22,7 +22,7 @@ For general CodeQL query development guidance, see [Common Query Development](./
   - [python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModels.qll](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModels.qll) dealing with flow models specified in extensible predicates.
     - [python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModelsSpecific.qll](https://github.com/github/codeql/blob/main/python/ql/lib/semmle/python/frameworks/data/internal/ApiGraphModelsSpecific.qll) handles the Python-specific Member[x] tokens by calling node.getMember(x) on the API graph
 
-Ex query that could test out the API Graphs for the given database to ensure a proper path is built: 
+Ex query that could test out the API Graphs for the given database to ensure a proper path is built:
 
 ```codeql
 import python
@@ -91,11 +91,21 @@ extensions:
       pack: codeql/python-all
       extensible: sinkModel
     data:
-      # Using API graphs modeling works: 
+      # Using API graphs modeling works:
       - ["databricks","Member[sql].Member[connect].ReturnValue.Member[cursor].ReturnValue.Member[execute].Argument[0]","sql-injection"]
   - addsTo:
       pack: codeql/python-all
       extensible: summaryModel
+    data: []
+
+  - addsTo:
+      pack: codeql/python-all
+      extensible: barrierModel
+    data: []
+
+  - addsTo:
+      pack: codeql/python-all
+      extensible: barrierGuardModel
     data: []
 
   - addsTo:
@@ -110,6 +120,46 @@ extensions:
 
 ```
 
+
+### Example: Barrier Using `html.escape`
+
+The `html.escape` function HTML-escapes a string, preventing HTML injection (XSS) attacks.
+
+```python
+import html
+escaped = html.escape(unknown) # Safe for XSS
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/python-all
+      extensible: barrierModel
+    data:
+      - ["html", "Member[escape].ReturnValue", "html-injection"]
+```
+
+Note: The `type` `"html"` starts at the `html` module import. The `path` navigates to the return value of `escape`. The `kind` `"html-injection"` must match the sink kind used by XSS queries.
+
+### Example: Barrier Guard Using Django URL Validation
+
+The `url_has_allowed_host_and_scheme` function from Django validates that a URL is safe for redirects.
+
+```python
+if url_has_allowed_host_and_scheme(url, allowed_hosts=...):
+    redirect(url)  # Safe
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/python-all
+      extensible: barrierGuardModel
+    data:
+      - ["django", "Member[utils].Member[http].Member[url_has_allowed_host_and_scheme].Argument[0,url:]", "true", "url-redirection"]
+```
+
+Note: The `acceptingValue` `"true"` means the barrier applies when the function returns true. `Argument[0,url:]` matches either the first positional argument or the keyword argument `url`.
 
 ### Additional References
 - **[Python Reference](./python_query_development.prompt.md)** - Python query development

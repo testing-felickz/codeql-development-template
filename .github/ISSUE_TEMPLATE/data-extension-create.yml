@@ -60,12 +60,14 @@ body:
     id: description
     attributes:
       label: Data Extension Description
-      description: "Describe the library/framework to model. What methods are sources of untrusted data? What methods are security-sensitive sinks? All applicable model types (sourceModel, sinkModel, summaryModel, typeModel, neutralModel) will be generated automatically."
+      description: "Describe the library/framework to model. What methods are sources of untrusted data? What methods are security-sensitive sinks? What methods sanitize data (barriers) or validate data (barrier guards)? All applicable model types (sourceModel, sinkModel, summaryModel, barrierModel, barrierGuardModel, typeModel, neutralModel) will be generated automatically."
       placeholder: |
         Library: databricks-sql-connector
         - Sources: None (uses Flask request sources)
         - Sinks: cursor.execute(query) is a SQL injection sink
         - Summaries: connect() returns a connection, connection.cursor() returns a cursor
+        - Barriers: db_escape(value) sanitizes output for SQL injection
+        - Barrier Guards: is_safe_query(query) returns true when query is safe for SQL injection
 
         Docs: https://docs.databricks.com/...
     validations:

@@ -29,6 +29,8 @@ The pack name is `codeql/ruby-all`.
 | `sourceModel` | `(type, path, kind)` | Model sources of tainted data |
 | `sinkModel` | `(type, path, kind)` | Model sinks where tainted data is used vulnerably |
 | `summaryModel` | `(type, path, input, output, kind)` | Model flow through method calls |
+| `barrierModel` | `(type, path, kind)` | Model barriers (sanitizers) that stop taint flow |
+| `barrierGuardModel` | `(type, path, acceptingValue, kind)` | Model barrier guards (validators) that stop taint via conditional checks |
 | `typeModel` | `(type1, type2, path)` | Define type relationships |
 
 #### Type column
@@ -105,6 +107,16 @@ extensions:
 
   - addsTo:
       pack: codeql/ruby-all
+      extensible: barrierModel
+    data: []
+
+  - addsTo:
+      pack: codeql/ruby-all
+      extensible: barrierGuardModel
+    data: []
+
+  - addsTo:
+      pack: codeql/ruby-all
       extensible: typeModel
     data: []
 ```
@@ -149,6 +161,49 @@ extensions:
     data:
       - ["Mysql2::Client", "Mysql2::EM::Client", ""]
 ```
+
+### Example: Barrier Using `Mysql2::Client#escape`
+
+The `escape` method on `Mysql2::Client` escapes special characters in a string for use in SQL statements, preventing SQL injection.
+
+```ruby
+client = Mysql2::Client.new
+escaped = client.escape(input) # Safe for SQL injection
+client.query("SELECT * FROM users WHERE name = '#{escaped}'")
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/ruby-all
+      extensible: barrierModel
+    data:
+      - ["Mysql2::Client", "Method[escape].ReturnValue", "sql-injection"]
+```
+
+Note: The `type` `"Mysql2::Client"` matches instances of the class. The `kind` `"sql-injection"` must match the sink kind used by SQL injection queries.
+
+### Example: Barrier Guard Using a Validation Method
+
+A barrier guard models a method that returns a boolean indicating whether data is safe. When the method returns the expected value, taint flow is stopped through the guarded branch.
+
+```ruby
+if Validator.is_safe(user_input)
+  # The check guards the use, so the input is safe.
+  client.query("SELECT * FROM users WHERE name = '#{user_input}'")
+end
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/ruby-all
+      extensible: barrierGuardModel
+    data:
+      - ["Validator!", "Method[is_safe].Argument[0]", "true", "sql-injection"]
+```
+
+Note: The `!` suffix on `"Validator!"` matches the class itself (not instances), since `is_safe` is a class method. The `acceptingValue` `"true"` means the barrier applies when `is_safe` returns true.
 
 ### Additional References
 - **[Ruby Reference](./ruby_query_development.prompt.md)** - Ruby query development

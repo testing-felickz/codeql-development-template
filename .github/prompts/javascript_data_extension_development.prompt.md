@@ -27,6 +27,8 @@ The pack name is `codeql/javascript-all`.
 | `sourceModel` | `(type, path, kind)` | Model sources of tainted data |
 | `sinkModel` | `(type, path, kind)` | Model sinks where tainted data is used vulnerably |
 | `summaryModel` | `(type, path, input, output, kind)` | Model flow through function calls |
+| `barrierModel` | `(type, path, kind)` | Model barriers (sanitizers) that stop taint flow |
+| `barrierGuardModel` | `(type, path, acceptingValue, kind)` | Model barrier guards (validators) that stop taint via conditional checks |
 | `typeModel` | `(type1, type2, path)` | Define type relationships |
 
 #### Type column (first column)
@@ -162,6 +164,47 @@ extensions:
     data:
       - ["@example/middleware", "Member[injectData].ReturnValue.GuardedRouteHandler.Parameter[0].Member[data]", "remote"]
 ```
+
+### Example: Barrier Using `encodeURIComponent`
+
+The `encodeURIComponent` function encodes a string for safe use in URLs, preventing HTML injection when the result is used in HTML contexts.
+
+```javascript
+let escaped = encodeURIComponent(input); // Safe for XSS
+document.body.innerHTML = escaped;
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/javascript-all
+      extensible: barrierModel
+    data:
+      - ["global", "Member[encodeURIComponent].ReturnValue", "html-injection"]
+```
+
+Note: The `type` `"global"` starts at the global object. The `path` navigates to the return value of `encodeURIComponent`. The `kind` `"html-injection"` must match the sink kind used by XSS queries.
+
+### Example: Barrier Guard Using a Validation Function
+
+A barrier guard models a function that returns a boolean indicating whether data is safe. When the function returns the expected value, taint flow is stopped through the guarded branch.
+
+```javascript
+if (isValid(userInput)) { // The check guards the use
+  db.query(userInput); // Safe
+}
+```
+
+```yaml
+extensions:
+  - addsTo:
+      pack: codeql/javascript-all
+      extensible: barrierGuardModel
+    data:
+      - ["my-package", "Member[isValid].Argument[0]", "true", "sql-injection"]
+```
+
+Note: The `acceptingValue` `"true"` means the barrier applies when `isValid` returns true. The `path` `"Member[isValid].Argument[0]"` identifies the value being validated (the first argument).
 
 ### Additional References
 - **[JavaScript Reference](./javascript_query_development.prompt.md)** - JavaScript/TypeScript query development
