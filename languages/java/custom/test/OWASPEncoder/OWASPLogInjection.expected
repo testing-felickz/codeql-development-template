@@ -1,0 +1,8 @@
+edges
+| OWASPLogInjection.java:16:26:16:54 | getParameter(...) : String | OWASPLogInjection.java:18:21:18:27 | tainted | provenance | Src:MaD:46221 Sink:MaD:45150 |
+nodes
+| OWASPLogInjection.java:16:26:16:54 | getParameter(...) : String | semmle.label | getParameter(...) : String |
+| OWASPLogInjection.java:18:21:18:27 | tainted | semmle.label | tainted |
+subpaths
+#select
+| OWASPLogInjection.java:18:21:18:27 | tainted | OWASPLogInjection.java:16:26:16:54 | getParameter(...) : String | OWASPLogInjection.java:18:21:18:27 | tainted | This log entry depends on a $@. | OWASPLogInjection.java:16:26:16:54 | getParameter(...) | user-provided value |
