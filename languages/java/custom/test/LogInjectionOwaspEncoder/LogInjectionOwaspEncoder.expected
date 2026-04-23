@@ -1,0 +1,10 @@
+edges
+| LogInjectionOwaspEncoder.java:11:26:11:42 | (...)... : String | LogInjectionOwaspEncoder.java:12:35:12:41 | tainted | provenance | Sink:MaD:50778 |
+| LogInjectionOwaspEncoder.java:11:35:11:42 | source(...) : Object | LogInjectionOwaspEncoder.java:11:26:11:42 | (...)... : String | provenance | Src:MaD:51887  |
+nodes
+| LogInjectionOwaspEncoder.java:11:26:11:42 | (...)... : String | semmle.label | (...)... : String |
+| LogInjectionOwaspEncoder.java:11:35:11:42 | source(...) : Object | semmle.label | source(...) : Object |
+| LogInjectionOwaspEncoder.java:12:35:12:41 | tainted | semmle.label | tainted |
+subpaths
+#select
+| LogInjectionOwaspEncoder.java:12:35:12:41 | tainted | LogInjectionOwaspEncoder.java:11:35:11:42 | source(...) : Object | LogInjectionOwaspEncoder.java:12:35:12:41 | tainted | This log entry depends on a $@. | LogInjectionOwaspEncoder.java:11:35:11:42 | source(...) | user-provided value |

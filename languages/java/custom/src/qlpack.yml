@@ -1,5 +1,7 @@
 name: languages-java-custom-src
 version: 0.0.2
-library: false
+library: true
 dependencies:
   codeql/java-all: "*"
+dataExtensions:
+  - models/**/*.yml
