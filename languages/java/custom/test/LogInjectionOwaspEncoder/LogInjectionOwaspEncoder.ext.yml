@@ -1,0 +1,12 @@
+extensions:
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      - ["", "LogInjectionOwaspEncoder", False, "source", "()", "", "ReturnValue", "remote", "manual"]
+
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierModel
+    data:
+      - ["org.owasp.encoder", "Encode", False, "forJava", "(String)", "", "ReturnValue", "log-injection", "manual"]
