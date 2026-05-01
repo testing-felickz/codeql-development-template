@@ -1,0 +1,24 @@
+extensions:
+  # Test source model - marks LogInjectionExternalBarrierTest.source() as a remote source
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      - ["", "LogInjectionExternalBarrierTest", False, "source", "()", "", "ReturnValue", "remote", "manual"]
+
+  # barrierModel - marks Encode.forJava return value as a log-injection sanitizer
+  # Schema: (package, type, subtypes, name, signature, ext, output, kind, provenance)
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierModel
+    data:
+      - ["org.owasp.encoder", "Encode", False, "forJava", "(String)", "", "ReturnValue", "log-injection", "manual"]
+
+  # barrierGuardModel - marks isSafeLogInput as a conditional barrier guard
+  # Schema: (package, type, subtypes, name, signature, ext, input, acceptingValue, kind, provenance)
+  # When isSafeLogInput returns true, the input argument is considered safe for log-injection
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierGuardModel
+    data:
+      - ["", "LogInjectionExternalBarrierTest", False, "isSafeLogInput", "(String)", "", "Argument[0]", "true", "log-injection", "manual"]

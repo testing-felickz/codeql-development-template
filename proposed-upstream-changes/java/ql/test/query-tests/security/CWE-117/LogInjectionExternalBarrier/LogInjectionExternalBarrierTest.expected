@@ -1,0 +1,16 @@
+edges
+| LogInjectionExternalBarrierTest.java:17:26:17:42 | (...)... : String | LogInjectionExternalBarrierTest.java:20:35:20:41 | tainted | provenance | Sink:MaD:50778 |
+| LogInjectionExternalBarrierTest.java:17:35:17:42 | source(...) : Object | LogInjectionExternalBarrierTest.java:17:26:17:42 | (...)... : String | provenance | Src:MaD:0 |
+| LogInjectionExternalBarrierTest.java:28:26:28:42 | (...)... : String | LogInjectionExternalBarrierTest.java:35:38:35:44 | tainted | provenance | Sink:MaD:50778 |
+| LogInjectionExternalBarrierTest.java:28:35:28:42 | source(...) : Object | LogInjectionExternalBarrierTest.java:28:26:28:42 | (...)... : String | provenance | Src:MaD:0 |
+nodes
+| LogInjectionExternalBarrierTest.java:17:26:17:42 | (...)... : String | semmle.label | (...)... : String |
+| LogInjectionExternalBarrierTest.java:17:35:17:42 | source(...) : Object | semmle.label | source(...) : Object |
+| LogInjectionExternalBarrierTest.java:20:35:20:41 | tainted | semmle.label | tainted |
+| LogInjectionExternalBarrierTest.java:28:26:28:42 | (...)... : String | semmle.label | (...)... : String |
+| LogInjectionExternalBarrierTest.java:28:35:28:42 | source(...) : Object | semmle.label | source(...) : Object |
+| LogInjectionExternalBarrierTest.java:35:38:35:44 | tainted | semmle.label | tainted |
+subpaths
+#select
+| LogInjectionExternalBarrierTest.java:20:35:20:41 | tainted | LogInjectionExternalBarrierTest.java:17:35:17:42 | source(...) : Object | LogInjectionExternalBarrierTest.java:20:35:20:41 | tainted | This log entry depends on a $@. | LogInjectionExternalBarrierTest.java:17:35:17:42 | source(...) | user-provided value |
+| LogInjectionExternalBarrierTest.java:35:38:35:44 | tainted | LogInjectionExternalBarrierTest.java:28:35:28:42 | source(...) : Object | LogInjectionExternalBarrierTest.java:35:38:35:44 | tainted | This log entry depends on a $@. | LogInjectionExternalBarrierTest.java:28:35:28:42 | source(...) | user-provided value |
