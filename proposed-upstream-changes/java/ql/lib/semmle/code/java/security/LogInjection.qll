@@ -37,8 +37,13 @@ private class DefaultLogInjectionSanitizer extends LogInjectionSanitizer instanc
 { }
 
 /**
- * A sanitizer for log injection that is defined via a barrier model
- * in a data extension with the kind "log-injection".
+ * A sanitizer for log injection that is defined via a data extension using
+ * the `barrierModel` or `barrierGuardModel` extensible predicates with
+ * the kind "log-injection".
+ *
+ * The `barrierNode` predicate resolves both:
+ * - `barrierModel`: direct barriers (e.g., sanitizer method return values)
+ * - `barrierGuardModel`: conditional barrier guards (e.g., validation checks)
  */
 private class ExternalLogInjectionSanitizer extends LogInjectionSanitizer {
   ExternalLogInjectionSanitizer() { barrierNode(this, "log-injection") }

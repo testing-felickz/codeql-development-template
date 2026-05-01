@@ -7,23 +7,31 @@ public class LogInjectionExternalBarrierTest {
         return null;
     }
 
+    public static boolean isSafeLogInput(String input) {
+        return input != null && !input.contains("\n") && !input.contains("\r");
+    }
+
+    // Test: barrierModel - direct sanitizer via return value
     public void testOwaspEncoderBarrier(Logger logger) {
         String tainted = (String) source(); // $ Source
 
         // Unsafe: tainted input flows directly to log
         logger.info("Order: {}", tainted); // $ Alert
 
-        // Safe: Encode.forJava sanitizes control characters (barrier via data extension)
+        // Safe: Encode.forJava sanitizes control characters (barrier via barrierModel)
         logger.info("Order: {}", Encode.forJava(tainted)); // Safe
     }
 
-    public void testOwaspEncoderForJavaSecondFlow(Logger logger) {
+    // Test: barrierGuardModel - conditional guard that blocks flow
+    public void testBarrierGuard(Logger logger) {
         String tainted = (String) source(); // $ Source
 
-        // Unsafe: direct use of tainted data
-        logger.info("Unsafe: {}", tainted); // $ Alert
+        // Safe: isSafeLogInput acts as a barrier guard (via barrierGuardModel)
+        if (isSafeLogInput(tainted)) {
+            logger.info("Guarded: {}", tainted); // Safe - guarded by barrierGuardModel
+        }
 
-        // Safe: Encode.forJava sanitizes control characters
-        logger.info("Safe forJava: {}", Encode.forJava(tainted)); // Safe
+        // Unsafe: no guard on this path
+        logger.info("Unguarded: {}", tainted); // $ Alert
     }
 }

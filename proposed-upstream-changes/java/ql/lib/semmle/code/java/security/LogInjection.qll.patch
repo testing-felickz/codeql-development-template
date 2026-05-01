@@ -1,12 +1,17 @@
 --- a/java/ql/lib/semmle/code/java/security/LogInjection.qll
 +++ b/java/ql/lib/semmle/code/java/security/LogInjection.qll
-@@ -35,6 +35,13 @@ private class DefaultLogInjectionSink extends LogInjectionSink {
+@@ -35,6 +35,17 @@ private class DefaultLogInjectionSink extends LogInjectionSink {
  private class DefaultLogInjectionSanitizer extends LogInjectionSanitizer instanceof SimpleTypeSanitizer
  { }
  
 +/**
-+ * A sanitizer for log injection that is defined via a barrier model
-+ * in a data extension with the kind "log-injection".
++ * A sanitizer for log injection that is defined via a data extension using
++ * the `barrierModel` or `barrierGuardModel` extensible predicates with
++ * the kind "log-injection".
++ *
++ * The `barrierNode` predicate resolves both:
++ * - `barrierModel`: direct barriers (e.g., sanitizer method return values)
++ * - `barrierGuardModel`: conditional barrier guards (e.g., validation checks)
 + */
 +private class ExternalLogInjectionSanitizer extends LogInjectionSanitizer {
 +  ExternalLogInjectionSanitizer() { barrierNode(this, "log-injection") }

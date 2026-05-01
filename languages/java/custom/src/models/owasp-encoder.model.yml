@@ -5,10 +5,17 @@ extensions:
   #
   # NOTE: This data extension works NATIVELY with the standard java/log-injection query
   # once the proposed upstream change to LogInjection.qll is merged (adding ExternalLogInjectionSanitizer).
+  # The upstream `barrierNode` predicate supports both extensible predicates:
+  #   - barrierModel: direct barriers (sanitizer return values)
+  #   - barrierGuardModel: conditional barrier guards (validation checks)
   # Until then, it requires the ExternalLogInjectionSanitizer.qll bridge file.
   #
   # Reference: https://github.com/OWASP/owasp-java-encoder/
   # CWE-117: Improper Output Neutralization for Logs
+  # Docs: https://codeql.github.com/docs/codeql-language-guides/customizing-library-models-for-java-and-kotlin/
+
+  # barrierModel: direct sanitizer - return value is safe
+  # Schema: (package, type, subtypes, name, signature, ext, output, kind, provenance)
   - addsTo:
       pack: codeql/java-all
       extensible: barrierModel
