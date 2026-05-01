@@ -1,0 +1,15 @@
+extensions:
+  # Test source model - marks LogInjectionExternalBarrierTest.source() as a remote source
+  - addsTo:
+      pack: codeql/java-all
+      extensible: sourceModel
+    data:
+      - ["", "LogInjectionExternalBarrierTest", False, "source", "()", "", "ReturnValue", "remote", "manual"]
+
+  # Barrier model - marks Encode.forJava as a log-injection sanitizer
+  # This is the key addition enabled by the ExternalLogInjectionSanitizer class
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierModel
+    data:
+      - ["org.owasp.encoder", "Encode", False, "forJava", "(String)", "", "ReturnValue", "log-injection", "manual"]

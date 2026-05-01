@@ -1,0 +1,16 @@
+extensions:
+  # OWASP Java Encoder - Encode.forJava() as a log-injection barrier
+  # This models org.owasp.encoder.Encode.forJava(String) as sanitizing log injection.
+  # The method encodes control characters (\n, \r, \t, etc.) which prevents CRLF log injection.
+  #
+  # NOTE: This data extension works NATIVELY with the standard java/log-injection query
+  # once the proposed upstream change to LogInjection.qll is merged (adding ExternalLogInjectionSanitizer).
+  # Until then, it requires the ExternalLogInjectionSanitizer.qll bridge file.
+  #
+  # Reference: https://github.com/OWASP/owasp-java-encoder/
+  # CWE-117: Improper Output Neutralization for Logs
+  - addsTo:
+      pack: codeql/java-all
+      extensible: barrierModel
+    data:
+      - ["org.owasp.encoder", "Encode", False, "forJava", "(String)", "", "ReturnValue", "log-injection", "manual"]
