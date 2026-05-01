@@ -17,10 +17,13 @@ public class LogInjectionExternalBarrierTest {
         logger.info("Order: {}", Encode.forJava(tainted)); // Safe
     }
 
-    public void testMultipleOwaspEncoderMethods(Logger logger) {
+    public void testOwaspEncoderForJavaSecondFlow(Logger logger) {
         String tainted = (String) source(); // $ Source
 
-        // Safe: Various OWASP encoder methods that could be modeled as barriers
+        // Unsafe: direct use of tainted data
+        logger.info("Unsafe: {}", tainted); // $ Alert
+
+        // Safe: Encode.forJava sanitizes control characters
         logger.info("Safe forJava: {}", Encode.forJava(tainted)); // Safe
     }
 }
