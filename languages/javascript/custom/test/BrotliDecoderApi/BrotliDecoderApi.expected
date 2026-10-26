@@ -1,0 +1,21 @@
+| BrotliDecoderApi.js:3:1:3:27 | zlib.br ... s(data) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:4:1:4:31 | zlib.br ... c(data) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:5:1:5:29 | zlib.cr ... press() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:6:1:6:27 | new zli ... press() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:9:1:9:26 | iterdec ... i(data) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:10:1:10:26 | decompr ... c(data) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:12:1:12:33 | new Dec ... rotli") | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:13:1:13:31 | new Dec ... format) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:15:1:15:10 | fetch(url) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:16:1:16:20 | new EventSource(url) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:17:1:17:18 | new WebSocket(url) | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:19:15:19:46 | certifi ... brotli" | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:20:15:20:49 | certifi ... ression | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:22:1:22:14 | express.json() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:23:1:23:13 | express.raw() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:24:1:24:14 | express.text() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:25:1:25:20 | express.urlencoded() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:26:1:26:17 | bodyParser.json() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:27:1:27:16 | bodyParser.raw() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:28:1:28:17 | bodyParser.text() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
+| BrotliDecoderApi.js:29:1:29:23 | bodyPar ... coded() | This API use can enable or negotiate Brotli decoding and may be relevant to CVE-2026-111497. |
